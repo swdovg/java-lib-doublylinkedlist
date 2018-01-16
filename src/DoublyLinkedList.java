@@ -1,3 +1,7 @@
+interface Filterable {
+    public boolean filterItem(Node node);
+}
+
 public class DoublyLinkedList {
 
     private int size;
@@ -9,11 +13,23 @@ public class DoublyLinkedList {
         head = tail = null;
     }
 
+    public synchronized int getSize() {
+        return size;
+    }
+
+    public synchronized Node getHead() {
+        return head;
+    }
+
+    public synchronized Node getTail() {
+        return tail;
+    }
+
     public synchronized void pushHead(Object value) {
         Node tmp = new Node();
         tmp.data=value;
-        tmp.prev=head;
-        tmp.next=null;
+        tmp.next=head;
+        tmp.prev=null;
 
         if (head != null)
             head.prev = tmp;
@@ -72,11 +88,11 @@ public class DoublyLinkedList {
             head = null;
 
         size--;
-        return tail.data;
+        return next.data;
     }
 
     public synchronized Node getNth(int index) {
-        Node tmp = new Node();
+        Node tmp = head;
         int i=0;
 
         if ( (index < 0) || (index > size) )
@@ -86,16 +102,57 @@ public class DoublyLinkedList {
             tmp = tmp.next;
             i++;
         }
-
         return tmp;
     }
 
-    public synchronized void pushNth() {
+    public synchronized void pushNth(int index, Object value) {
+        Node ins = new Node();
+        Node elm = getNth(index);
 
+        if (elm==null)
+            return;
+        ins.data = value;
+        ins.prev = elm;
+        ins.next = elm.next;
+
+        if (elm.next != null)
+            elm.next.prev=ins;
+
+        elm.next=ins;
+
+        if (elm.prev == null)
+            head=elm;
+
+        if (elm.next == null)
+            tail=elm;
+
+        size++;
     }
 
-    public synchronized Object popNth() {
+    public synchronized Object popNth(int index) {
+        Object tmp = new Node();
+        Node elm = getNth(index);
 
+        if (elm == null)
+            return null;
+
+        if (elm.prev != null)
+            elm.prev.next=elm.next;
+
+        if (elm.next != null)
+            elm.next.prev=elm.prev;
+
+        tmp = elm.data;
+
+        if (elm.prev == null)
+            head = elm.next;
+
+        if (elm.next == null)
+            tail = elm.prev;
+
+        size--;
+
+        return tmp;
     }
 
     public synchronized boolean isListEmpty() {
@@ -105,18 +162,57 @@ public class DoublyLinkedList {
             return false;
     }
 
-    public synchronized Node findNode() {
+    public synchronized Node findNode(Object value) {
+        if (head == null)
+            return null;
 
+        Node tmp = head;
+
+        while (tmp != null) {
+            if (tmp.data.equals(value)) {
+                return tmp;
+            }
+            tmp=tmp.next;
+        }
+        return null;
     }
 
-    public synchronized DoublyLinkedList filter () {
+    public synchronized DoublyLinkedList filter (Filterable p) {
+        if (head == null)
+            return null;
+        DoublyLinkedList newList = new DoublyLinkedList();
+        Node tmp = head;
 
+        while (tmp != null) {
+            if (p.filterItem(tmp))
+                newList.pushTail(tmp.data);
+            tmp=tmp.next;
+        }
+        return newList;
     }
 
 
     public synchronized DoublyLinkedList reverse() {
+        if (head == null)
+            return null;
 
+        DoublyLinkedList newList = new DoublyLinkedList();
+        Node tmp = head;
+
+        while (tmp != null) {
+            newList.pushHead(tmp.data);
+            tmp=tmp.next;
+        }
+        return newList;
     }
 
+    public synchronized void PrintDblLinkedList() {
+        Node tmp = head;
+        while (tmp != null) {
+            System.out.print(tmp.data.toString()+" ");
+            tmp = tmp.next;
+        }
+        System.out.println();
+    }
 
 }
