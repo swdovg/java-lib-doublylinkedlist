@@ -2,6 +2,12 @@ interface Filterable {
     public boolean filterItem(Node node);
 }
 
+class Node {
+    Object data;
+    Node next;
+    Node prev;
+}
+
 public class DoublyLinkedList {
 
     private int size;
@@ -206,7 +212,7 @@ public class DoublyLinkedList {
         return newList;
     }
 
-    public synchronized void PrintDblLinkedList() {
+    public synchronized void printDblLinkedList() {
         Node tmp = head;
         while (tmp != null) {
             System.out.print(tmp.data.toString()+" ");
